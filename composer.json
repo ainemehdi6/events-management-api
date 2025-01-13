@@ -15,8 +15,10 @@
         "gesdinet/jwt-refresh-token-bundle": "^1.4",
         "lexik/jwt-authentication-bundle": "^2.21",
         "nelmio/cors-bundle": "^2.5",
+        "phpdocumentor/reflection-docblock": "^5.6",
         "phpunit/phpunit": "^10.5",
         "symfony/console": "6.4.*",
+        "symfony/deprecation-contracts": "*",
         "symfony/dotenv": "6.4.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.4.*",
@@ -24,7 +26,11 @@
         "symfony/rate-limiter": "6.4.*",
         "symfony/runtime": "6.4.*",
         "symfony/security-bundle": "6.4.*",
+        "symfony/serializer": "6.4.*",
+        "symfony/translation": "6.4.*",
+        "symfony/translation-contracts": "*",
         "symfony/uid": "6.4.*",
+        "symfony/validator": "6.4.*",
         "symfony/yaml": "6.4.*"
     },
     "config": {

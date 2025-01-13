@@ -1,0 +1,25 @@
+user_registration:
+    type:
+        blank: The type of account is required
+        invalid_choice: The account type "{{ value }}" is invalid. It must be one of {{ choices }}
+    gender:
+        blank: The gender is required
+        invalid_choice: The gender "{{ value }}" is invalid. It must be one of {{ choices }}
+    email:
+        blank: The email address is required
+        invalid: The email address "{{ value }}" is not a valid email address
+        account_already_exists: An account with this email address already exists
+    firstname:
+        blank: The firstname is required
+    lastname:
+        blank: The lastname is required
+    date_of_birth:
+        blank: The date of birth is required
+        invalid_format: 'The date of birth does not match the required format : dd/mm/yyyy'
+    password:
+        blank_when_no_third_party_info: Password is required
+        too_short: The password must contain at least {{ limit }} characters
+        missing_capital_letter: The password must contain at least one capital letter
+        missing_number: The password must contain at least one number
+        whitespace: The password contains unauthorized characters
+    too_young: Creating an account on the platform is allowed only for people older than 18

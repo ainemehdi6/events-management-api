@@ -47,7 +47,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-
     public function __construct()
     {
         $this->uuid = Uuid::v7();
