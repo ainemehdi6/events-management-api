@@ -3,13 +3,16 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[ORM\UniqueConstraint(name: 'BACK_USER_UNIQ_IDENTIFIER_UUID', fields: ['authUuid'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -17,8 +20,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(type: Types::STRING, length: 255)]
     private ?string $email = null;
+
+    #[ORM\Column(type: Types::STRING, length: 255)]
+    private ?string $firstname = null;
+
+    #[ORM\Column(type: Types::STRING, length: 255)]
+    private ?string $lastname = null;
+
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private ?bool $active = true;
+
+    #[ORM\Column(type: UuidType::NAME)]
+    private Uuid $authUuid;
 
     /**
      * @var list<string> The user roles
@@ -32,28 +47,54 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): static
+    public function setEmail(string $email): User
     {
         $this->email = $email;
 
         return $this;
     }
 
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
+    public function getFirstname(): ?string
+    {
+        return $this->firstname;
+    }
+
+    public function setFirstname(?string $firstname): User
+    {
+        $this->firstname = $firstname;
+
+        return $this;
+    }
+
+    public function getLastname(): ?string
+    {
+        return $this->lastname;
+    }
+
+    public function setLastname(?string $lastname): User
+    {
+        $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function getActive(): ?bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(?bool $active): User
+    {
+        $this->active = $active;
+
+        return $this;
+    }
+
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
@@ -75,7 +116,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @param list<string> $roles
      */
-    public function setRoles(array $roles): static
+    public function setRoles(array $roles): UserUser
     {
         $this->roles = $roles;
 
@@ -90,9 +131,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(string $password): User
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getAuthUuid(): ?Uuid
+    {
+        return $this->authUuid;
+    }
+
+    public function setAuthUuid(?Uuid $authUuid): UserUser
+    {
+        $this->authUuid = $authUuid;
 
         return $this;
     }

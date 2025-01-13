@@ -33,7 +33,7 @@ class SecurityControllerTest extends WebTestCase
 
         $client->request(
             Request::METHOD_POST,
-            '/api/v1/login-check',
+            '/api/login-check',
             server: $this->buildHeaders(),
             content: json_encode([
                 'email' => $email,
@@ -85,7 +85,7 @@ class SecurityControllerTest extends WebTestCase
 
         $client->request(
             Request::METHOD_POST,
-            '/api/v1/register/step/1',
+            '/api/register',
             parameters: [
                 'body' => json_encode([
                     'password' => $identity['password'],
@@ -117,7 +117,7 @@ class SecurityControllerTest extends WebTestCase
 
         $client->request(
             Request::METHOD_POST,
-            '/api/v1/register/step/1',
+            '/api/register',
             parameters: [
                 'body' => json_encode([
                     'email' => $identity['email'],
