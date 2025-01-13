@@ -12,7 +12,7 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[ORM\UniqueConstraint(name: 'BACK_USER_UNIQ_IDENTIFIER_UUID', fields: ['authUuid'])]
+#[ORM\UniqueConstraint(name: 'USER_UNIQ_IDENTIFIER_UUID', fields: ['uuid'])]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -33,7 +33,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $active = true;
 
     #[ORM\Column(type: UuidType::NAME)]
-    private Uuid $authUuid;
+    private Uuid $uuid;
 
     /**
      * @var list<string> The user roles
@@ -46,6 +46,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+
+    public function __construct()
+    {
+        $this->uuid = Uuid::v7();
+    }
 
     public function getEmail(): ?string
     {
@@ -138,14 +144,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getAuthUuid(): ?Uuid
+    public function getUuid(): ?Uuid
     {
-        return $this->authUuid;
+        return $this->uuid;
     }
 
-    public function setAuthUuid(?Uuid $authUuid): UserUser
+    public function setUuid(?Uuid $uuid): UserUser
     {
-        $this->authUuid = $authUuid;
+        $this->uuid = $uuid;
 
         return $this;
     }
