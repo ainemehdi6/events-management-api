@@ -20,5 +20,18 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    App\Listener\JwtAuthenticationSuccessListener:
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse, priority: 10 }
+
+    App\Security\ApiAuthenticator:
+        arguments:
+            $applicationToken: '%env(APPLICATION_TOKEN)%'
+
+    app.security.handler.post_authentication:
+        class: App\Security\Handler\PostAuthenticationHandler
+        arguments:
+            $applicationToken: '%env(APPLICATION_TOKEN)%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

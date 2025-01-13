@@ -3,3 +3,14 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+auth_logout:
+    path: /auth/logout
+    methods: GET
+
+api_login_check:
+    path: /api/login-check
+    methods: POST
+api_refresh_token:
+    path: /api/token/refresh
+    methods: POST
