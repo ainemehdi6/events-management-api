@@ -10,8 +10,6 @@ use Symfony\Component\Filesystem\Exception\IOException;
 
 class UserTransformer
 {
-    private const PASSWORD_SALT = 'Liz2bpY6956LiF';
-
     /**
      * Transforms the first step DTO into a User entity.
      * 
@@ -23,18 +21,13 @@ class UserTransformer
             throw new \InvalidArgumentException('Invalid email format.');
         }
 
-        $saltedPassword = $this->saltPassword($dto->password);
-
         $user = (new User())
             ->setEmail($dto->email)
             ->setFirstname($dto->firstname)
             ->setLastname($dto->lastname)
-            ->setPassword($saltedPassword)
-            ->setRoles(['ROLE_USER']); 
-
-        if (isset($dto->active)) {
-            $user->setActive($dto->active);
-        }
+            ->setPassword(password_hash($dto->password, PASSWORD_DEFAULT))
+            ->setRoles(['ROLE_USER']) 
+            ->setActive(true);
 
         return $user;
     }
@@ -51,9 +44,9 @@ class UserTransformer
     /**
      * Salts and hashes the password.
      */
-    private function saltPassword(string $password): string
-    {
-        $saltedPassword = $password . self::PASSWORD_SALT;
-        return password_hash($saltedPassword, PASSWORD_DEFAULT);
-    }
+//    private function saltPassword(string $password): string
+//    {
+//        $saltedPassword = $password . self::PASSWORD_SALT;
+//        return password_hash($saltedPassword, PASSWORD_DEFAULT);
+//    }
 }

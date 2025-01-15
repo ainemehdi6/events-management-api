@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Tests\Api\v1\Controller;
+namespace App\Tests\Api\Controller;
 
-use App\Tests\Api\v1\Constant\Document;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Zenstruck\Foundry\Test\Factories;
@@ -16,15 +14,14 @@ class SecurityControllerTest extends WebTestCase
 {
     use Factories;
 
-    private const string UUID_REGEX_PATTERN = '/^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/';
+    private const UUID_REGEX_PATTERN = '/^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/';
 
     private ?Generator $faker;
 
-    public function __construct()
+    protected function setUp(): void
     {
-        $this->faker = Factory::create('FR');
-
-        parent::__construct();
+        parent::setUp();
+        $this->faker = Factory::create('fr_FR');
     }
 
     private function createAuthenticatedClient(string $email, string $password): KernelBrowser
@@ -57,16 +54,24 @@ class SecurityControllerTest extends WebTestCase
         ];
         $password = str_shuffle(join('', $passParts));
 
+        $firstname = ucfirst($this->faker->firstName());
+        $lastname = ucfirst($this->faker->lastName());
+
         $email = mb_strtolower(sprintf('%s%s%s@%s',
+            substr($firstname, 0, 1),
+            $lastname,
             $this->faker->randomNumber(5),
             $this->faker->safeEmailDomain(),
         ));
 
         return [
+            'firstname' => $firstname,
+            'lastname' => $lastname,
             'email' => $email,
             'password' => $password,
         ];
     }
+
 
     public function buildHeaders(array $additionnalHeaders = []): array
     {
@@ -86,16 +91,13 @@ class SecurityControllerTest extends WebTestCase
         $client->request(
             Request::METHOD_POST,
             '/api/register',
-            parameters: [
-                'body' => json_encode([
-                    'password' => $identity['password'],
-                    'email' => $identity['email'],
-                ]),
-            ],
-            server: [
-                'CONTENT_TYPE' => 'multipart/form-data',
-                'HTTP_X_API_TOKEN' => $_ENV['APPLICATION_TOKEN'],
-            ]
+            server: $this->buildHeaders(),
+            content: json_encode([
+                'firstname' => $identity['firstname'],
+                'lastname' => $identity['lastname'],
+                'password' => $identity['password'],
+                'email' => $identity['email'],
+            ])
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
@@ -106,10 +108,10 @@ class SecurityControllerTest extends WebTestCase
         $this->assertEquals('User successfully created', $responseData['title']);
 
         $this->assertNotEmpty($responseData['accountUuid']);
-        $this->assertNotFalse(preg_match(self::UUID_REGEX_PATTERN, $responseData['accountUuid']));
+        $this->assertMatchesRegularExpression(self::UUID_REGEX_PATTERN, $responseData['accountUuid']);
     }
 
-    public function testResgisterIndividualUserWithEmailWithoutPasswordFails(): void
+    public function testRegisterIndividualUserWithEmailWithoutPasswordFails(): void
     {
         $client = static::createClient();
 
@@ -118,15 +120,12 @@ class SecurityControllerTest extends WebTestCase
         $client->request(
             Request::METHOD_POST,
             '/api/register',
-            parameters: [
-                'body' => json_encode([
-                    'email' => $identity['email'],
-                ]),
-            ],
-            server: [
-                'CONTENT_TYPE' => 'multipart/form-data',
-                'HTTP_X_API_TOKEN' => $_ENV['APPLICATION_TOKEN'],
-            ]
+            server: $this->buildHeaders(),
+            content: json_encode([
+                'firstname' => $identity['firstname'],
+                'lastname' => $identity['lastname'],
+                'email' => $identity['email'],
+            ])
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
@@ -144,6 +143,6 @@ class SecurityControllerTest extends WebTestCase
         $this->assertEquals('password', $error['name']);
 
         $this->assertNotEmpty($error['reason']);
-        $this->assertEquals('Password is required', $error['reason']);
+        $this->assertEquals('The password is required', $error['reason']);
     }
 }

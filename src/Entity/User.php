@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use App\Validation\PasswordStrengthConstraint;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -35,15 +36,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: UuidType::NAME)]
     private Uuid $uuid;
 
-    /**
-     * @var list<string> The user roles
-     */
     #[ORM\Column]
     private array $roles = [];
-
-    /**
-     * @var string The hashed password
-     */
+    
     #[ORM\Column]
     private ?string $password = null;
 
@@ -121,7 +116,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @param list<string> $roles
      */
-    public function setRoles(array $roles): UserUser
+    public function setRoles(array $roles): User
     {
         $this->roles = $roles;
 
@@ -148,7 +143,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->uuid;
     }
 
-    public function setUuid(?Uuid $uuid): UserUser
+    public function setUuid(?Uuid $uuid): User
     {
         $this->uuid = $uuid;
 
