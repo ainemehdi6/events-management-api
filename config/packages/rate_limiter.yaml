@@ -1,6 +1,0 @@
-framework:
-    rate_limiter:
-        api_login:
-            policy: 'token_bucket'
-            limit: 10
-            rate: { interval: '1 minute', amount: 10 }

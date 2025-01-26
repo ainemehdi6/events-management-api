@@ -4,49 +4,54 @@ declare(strict_types=1);
 
 namespace App\Transformer;
 
-use App\Dto\UserRegistrationDto;
+use App\DTO\UserDTO;
 use App\Entity\User;
-use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class UserTransformer
+class UserTransformer implements TransformerInterface
 {
-    /**
-     * Transforms the first step DTO into a User entity.
-     * 
-     * @throws IOException|\InvalidArgumentException
-     */
-    public function transform(UserRegistrationDto $dto): User
+    public function __construct(
+        private readonly UserPasswordHasherInterface $passwordHasher,
+    ) {
+    }
+
+    public function transformToEntity(object $dto, ?object $entity = null): object
     {
-        if (!$this->isValidEmail($dto->email)) {
-            throw new \InvalidArgumentException('Invalid email format.');
+        if (!$dto instanceof UserDTO) {
+            throw new \InvalidArgumentException('DTO must be an instance of UserDTO');
         }
 
-        $user = (new User())
-            ->setEmail($dto->email)
-            ->setFirstname($dto->firstname)
+        if ($entity !== null && !$entity instanceof User) {
+            throw new \InvalidArgumentException('Entity must be an instance of User');
+        }
+
+        $user = $entity ?? new User();
+
+        $user->setFirstname($dto->firstname)
             ->setLastname($dto->lastname)
-            ->setPassword(password_hash($dto->password, PASSWORD_DEFAULT))
-            ->setRoles(['ROLE_USER']) 
-            ->setActive(true);
+            ->setEmail($dto->email)
+            ->setRoles(['ROLE_USER']);
+
+        if ($dto->password) {
+            $user->setPassword(
+                $this->passwordHasher->hashPassword($user, $dto->password)
+            );
+        }
 
         return $user;
     }
 
-    /**
-     * Validates the email using a regex pattern.
-     */
-    private function isValidEmail(string $email): bool
+    public function transformFromEntity(object $entity): object
     {
-        $pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
-        return (bool) preg_match($pattern, $email);
-    }
+        if (!$entity instanceof User) {
+            throw new \InvalidArgumentException('Entity must be an instance of User');
+        }
 
-    /**
-     * Salts and hashes the password.
-     */
-//    private function saltPassword(string $password): string
-//    {
-//        $saltedPassword = $password . self::PASSWORD_SALT;
-//        return password_hash($saltedPassword, PASSWORD_DEFAULT);
-//    }
+        $dto = new UserDTO();
+        $dto->firstname = $entity->getFirstname();
+        $dto->lastname = $entity->getLastname();
+        $dto->email = $entity->getEmail();
+
+        return $dto;
+    }
 }

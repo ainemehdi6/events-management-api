@@ -1,60 +1,70 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
-use App\Dto\UserRegistrationDto;
-use App\Transformer\UserTransformer;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Filesystem\Exception\IOException;
+use App\DTO\UserDTO;
+use App\Entity\User;
+use App\Service\UserService;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-#[Route('api')]
-class AuthController extends ApiController
+#[Route('/api', name: 'api_auth_')]
+class AuthController extends AbstractController
 {
-    #[Route('/register', name: 'register', methods: [Request::METHOD_POST])]
-    public function register(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        ValidatorInterface $validator,
-        UserTransformer $transformer,
-    ): JsonResponse {
-        $userRegistrationDto = $this->serializer->deserialize(
+    public function __construct(
+        private readonly UserService $userService,
+        private readonly SerializerInterface $serializer,
+        private readonly ValidatorInterface $validator,
+    ) {
+    }
+
+    #[Route('/register', name: 'register', methods: ['POST'])]
+    public function register(Request $request): JsonResponse
+    {
+        /** @var UserDTO $userDTO */
+        $userDTO = $this->serializer->deserialize(
             $request->getContent(),
-            UserRegistrationDto::class,
-            JsonEncoder::FORMAT,
+            UserDTO::class,
+            'json'
         );
 
-        $errors = $validator->validate($userRegistrationDto);
-
+        $errors = $this->validator->validate($userDTO);
         if (count($errors) > 0) {
-            throw new ValidationFailedException($userRegistrationDto, $errors);
-        }
-
-        try {
-            $user = $transformer->transform($userRegistrationDto);
-        } catch (IOException $e) {
-            return $this->jsonResponse(
-                $request->getUri(),
-                $e->getMessage(),
-                'An error occured while trying to register the user'
+            return $this->json(
+                ['errors' => (string) $errors],
+                Response::HTTP_BAD_REQUEST
             );
         }
 
-        $entityManager->persist($user);
-        $entityManager->flush();
+        $user = $this->userService->createUser($userDTO);
 
-        return $this->jsonResponse(
-            $request->getUri(),
-            'User successfully created',
-            'User has been successfully created',
-            ['accountUuid' => $user->getUuid()],
-            status: Response::HTTP_CREATED,
-        );       
+        return $this->json(
+            [
+                'message' => 'User registered successfully',
+                'user' => $user,
+            ],
+            Response::HTTP_CREATED,
+            [],
+            ['groups' => ['user:read']]
+        );
+    }
+
+    #[Route('/profile', name: 'profile', methods: ['GET'])]
+    public function profile(): JsonResponse
+    {
+        return $this->json(
+            $this->getUser(),
+            Response::HTTP_OK,
+            [],
+            ['groups' => ['user:read']]
+        );
     }
 }

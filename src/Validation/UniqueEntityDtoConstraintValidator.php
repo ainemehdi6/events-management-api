@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Validation;
 
-use App\Dto\EntityDto;
+use App\DTO\EntityDTO;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -26,8 +26,8 @@ class UniqueEntityDtoConstraintValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, UniqueEntityDtoConstraint::class);
         }
 
-        if (!$value instanceof EntityDto) {
-            throw new \ReflectionException(sprintf('Class "%s" does not implement the "%s" interface', $value::class, EntityDto::class));
+        if (!$value instanceof EntityDTO) {
+            throw new \ReflectionException(sprintf('Class "%s" does not implement the "%s" interface', $value::class, EntityDTO::class));
         }
 
         $targetEntityFqcn = $value->getTargetEntity();

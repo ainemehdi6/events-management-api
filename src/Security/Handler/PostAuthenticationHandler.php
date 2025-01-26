@@ -30,9 +30,7 @@ class PostAuthenticationHandler implements AuthenticationSuccessHandlerInterface
         /** @var User $user */
         $user = $token->getUser();
 
-        $response = $this->authenticationSuccessHandler->handleAuthenticationSuccess($token->getUser());
-
-        return $response;
+        return $this->authenticationSuccessHandler->handleAuthenticationSuccess($user);
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response

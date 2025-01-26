@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Listener;
 
+use App\Entity\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class JwtAuthenticationSuccessListener
 {
@@ -20,6 +22,7 @@ class JwtAuthenticationSuccessListener
     {
         $data = $event->getData();
         $this->addTokenExpiration($data);
+        $this->addUserRoles($data, $event->getUser());
         $event->setData($data);
     }
 
@@ -43,5 +46,14 @@ class JwtAuthenticationSuccessListener
         }
 
         $data['token_expiration'] = $decodedToken['exp'];
+    }
+
+    private function addUserRoles(array &$data, UserInterface $user): void
+    {
+        if (!isset($data['token'])) {
+            return;
+        }
+
+        $data['user_roles'] = $user->getRoles();
     }
 }

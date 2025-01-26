@@ -12,6 +12,11 @@ framework:
         cookie_secure: auto
         cookie_samesite: lax
 
+    set_locale_from_accept_language: true
+    set_content_language_from_locale: true
+    enabled_locales:
+        - fr
+
     #esi: true
     #fragments: true
     php_errors:

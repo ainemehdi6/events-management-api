@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Dto;
+namespace App\DTO;
 
-interface EntityDto
+interface EntityDTO
 {
     public function getTargetEntity(): string;
 }
