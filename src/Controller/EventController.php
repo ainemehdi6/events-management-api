@@ -33,7 +33,22 @@ class EventController extends AbstractController
     #[Route('', name: 'index', methods: ['GET'])]
     public function index(): JsonResponse
     {
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json(
+                ['error' => 'User must be authenticated'],
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
+
         $events = $this->eventRepository->findAll();
+
+        foreach ($events as $event) {
+            $isRegistered = $event->getRegistrations()
+                ->exists(fn($key, $registration) => $registration->getUser() === $user);
+            $event->setIsRegistered($isRegistered);
+        }
 
         return $this->json(
             $events,
@@ -43,13 +58,11 @@ class EventController extends AbstractController
         );
     }
 
+
     #[IsGranted('ROLE_ADMIN')]
     #[Route('', name: 'create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        /** @var User $user */
-        $user = $this->getUser();
-
         /** @var EventDTO $eventDTO */
         $eventDTO = $this->serializer->deserialize(
             $request->getContent(),
@@ -71,7 +84,7 @@ class EventController extends AbstractController
             $event,
             Response::HTTP_CREATED,
             [],
-            ['groups' => ['event:read']]
+            ['groups' => ['event:read', 'event:read:admin']]
         );
     }
 
@@ -88,6 +101,19 @@ class EventController extends AbstractController
             );
         }
 
+        $user = $this->getUser();
+
+        if (!$user instanceof User) {
+            return $this->json(
+                ['error' => 'User must be authenticated'],
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
+
+        $isRegistered = $event->getRegistrations()
+            ->exists(fn($key, $registration) => $registration->getUser() === $user);
+        $event->setIsRegistered($isRegistered);
+
         return $this->json(
             $event,
             Response::HTTP_OK,
@@ -100,9 +126,6 @@ class EventController extends AbstractController
     #[Route('/{id}', name: 'update', methods: ['PUT'])]
     public function update(Request $request, Uuid $id): JsonResponse
     {
-        /** @var User $user */
-        $user = $this->getUser();
-
         $event = $this->eventRepository->find($id);
 
         if (!$event) {
@@ -133,7 +156,7 @@ class EventController extends AbstractController
             $updatedEvent,
             Response::HTTP_OK,
             [],
-            ['groups' => ['event:read']]
+            ['groups' => ['event:read', 'event:read:admin']]
         );
     }
 

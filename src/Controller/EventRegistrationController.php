@@ -142,4 +142,33 @@ class EventRegistrationController extends AbstractController
             ['groups' => ['registration:read']]
         );
     }
+
+    #[Route('/{id}/register', name: 'cancel', methods: ['DELETE'])]
+    public function cancelRegistration(Event $event): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return $this->json(
+                ['error' => 'User must be authenticated'],
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
+
+        $registration = $this->registrationRepository->findOneByEventAndUser(
+            $event->getId(),
+            $user->getId()
+        );
+
+        if (!$registration) {
+            return $this->json(
+                ['error' => 'No registration found for this event'],
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
+        $this->entityManager->remove($registration);
+        $this->entityManager->flush();
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
 }

@@ -30,3 +30,12 @@ services:
       MYSQL_DATABASE: tp_securisation
     ports:
       - "3306:3306"
+
+  api-doc:
+    image: redocly/redoc
+    ports:
+      - "8080:80"
+    environment:
+      - SPEC_URL=/doc/specifications.yaml
+    volumes:
+      - ./doc/specifications.yaml:/usr/share/nginx/html/doc/specifications.yaml

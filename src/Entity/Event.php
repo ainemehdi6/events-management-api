@@ -65,7 +65,6 @@ class Event
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(referencedColumnName: 'id', nullable: false)]
-    #[Groups(['event:read'])]
     private ?User $organizer = null;
 
     #[ORM\Column(type: Types::JSON)]
@@ -81,8 +80,11 @@ class Event
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\OneToMany(targetEntity: EventRegistration::class, mappedBy: 'event', orphanRemoval: true)]
-    #[Groups(['event:read'])]
+    #[Groups(['event:read:admin'])]
     private Collection $registrations;
+
+    #[Groups(['event:read'])]
+    private ?bool $isRegistered = null;
 
     public function __construct()
     {
@@ -281,6 +283,17 @@ class Event
                 $registration->setEvent(null);
             }
         }
+        return $this;
+    }
+
+    public function getIsRegistered(): ?bool
+    {
+        return $this->isRegistered;
+    }
+
+    public function setIsRegistered(bool $isRegistered): static
+    {
+        $this->isRegistered = $isRegistered;
         return $this;
     }
 }
