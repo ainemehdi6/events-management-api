@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport d'Audit Composer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            padding: 15px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            padding: 12px;
+            border: 1px solid #dee2e6;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        table .table-secondary {
+            background-color: #e9ecef;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 6px 12px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #0d6efd;
+            border: none;
+            border-radius: 4px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #0b5ed7;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            table th, table td {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    {% if advisories is empty %}
+        <div class="alert">Aucune vulnérabilité n'a été trouvée</div>
+    {% endif %}
+
+    <table>
+        <thead></thead>
+        <tbody>
+        {% set current_package = null %}
+        {% for advisory in advisories %}
+        {% if current_package != advisory.packageName %}
+        {% if current_package is not null %}
+        </tbody>
+        {% endif %}
+        <tr class="table-secondary">
+            <td colspan="6">
+                <h2>Package: <code>{{ advisory.packageName }}</code></h2>
+            </td>
+        </tr>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Titre</th>
+            <th>CVE</th>
+            <th>Versions Affectées</th>
+            <th>Date de Publication</th>
+            <th>Lien</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% set current_package = advisory.packageName %}
+        {% endif %}
+        <tr>
+            <td>{{ advisory.advisoryId }}</td>
+            <td>{{ advisory.title }}</td>
+            <td>{{ advisory.cve | default('N/A') }}</td>
+            <td>{{ advisory.affectedVersions }}</td>
+            <td>{{ advisory.reportedAt | date('Y-m-d') }}</td>
+            <td><a href="{{ advisory.link }}" target="_blank" class="btn">Voir</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

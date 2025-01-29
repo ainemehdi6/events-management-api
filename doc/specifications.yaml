@@ -13,7 +13,16 @@ components:
         bearerAuth:
             type: http
             scheme: bearer
-            bearerFormat: JWT
+            description: Authentication bearer that can be generated from the route [/api/login-check](#tag/Authentication/paths/~1login-check/post)
+        apiKeyAuth:
+            type: apiKey
+            in: header
+            name: X-API-TOKEN
+            description: The api key authenticating the application consuming the API
+
+    security:
+        - apiKeyAuth: [ ]
+        - bearerAuth: [ ]
 
     schemas:
         Error:
@@ -61,7 +70,7 @@ components:
                     type: integer
                 status:
                     type: string
-                    enum: [draft, published, cancelled, completed]
+                    enum: [ draft, published, cancelled, completed ]
                 imageUrl:
                     type: string
                     format: uri
@@ -120,7 +129,7 @@ components:
                     $ref: '#/components/schemas/User'
                 status:
                     type: string
-                    enum: [pending, confirmed, cancelled]
+                    enum: [ pending, confirmed, cancelled ]
                 createdAt:
                     type: string
                     format: date-time
@@ -321,6 +330,8 @@ paths:
         post:
             summary: Login user
             tags: [Authentication]
+            security:
+                - apiKeyAuth: [ ]
             requestBody:
                 required: true
                 content:
@@ -370,6 +381,8 @@ paths:
         post:
             summary: Refresh User Token
             tags: [ Authentication ]
+            security:
+                - apiKeyAuth: [ ]
             requestBody:
                 required: true
                 content:
@@ -416,6 +429,8 @@ paths:
         post:
             summary: Register new user
             tags: [Authentication]
+            security:
+                - apiKeyAuth: [ ]
             requestBody:
                 required: true
                 content:

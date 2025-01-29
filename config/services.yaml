@@ -33,5 +33,9 @@ services:
         arguments:
             $applicationToken: '%env(APPLICATION_TOKEN)%'
 
+    App\Mailer\Mailer:
+        arguments:
+            $mailNoReply: "%env(MAIL_NO_REPLY)%"
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

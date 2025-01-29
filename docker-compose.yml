@@ -22,6 +22,7 @@ services:
       - .:/var/www/html
     depends_on:
       - php
+      - mailpit
 
   db:
     image: mysql:8.0
@@ -39,3 +40,9 @@ services:
       - SPEC_URL=/doc/specifications.yaml
     volumes:
       - ./doc/specifications.yaml:/usr/share/nginx/html/doc/specifications.yaml
+
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - 1025:1025
+      - 8025:8025

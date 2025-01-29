@@ -30,8 +30,8 @@ INSERT INTO event (
     DATE_ADD(NOW(), INTERVAL 30 DAY),
     DATE_ADD(NOW(), INTERVAL 31 DAY),
     'Convention Center, New York',
-    500,
-    350,
+    30,
+    0,
     UNHEX(REPLACE('0194a352-1e63-7eb9-a5d1-1d0402ff51f6', '-', '')),
     'published',
     'https://images.unsplash.com/photo-1540575467063-178a50c2df87',
@@ -49,7 +49,7 @@ INSERT INTO event (
     DATE_ADD(NOW(), INTERVAL 15 DAY),
     'Tech Hub, San Francisco',
     50,
-    45,
+    0,
     UNHEX(REPLACE('0194a352-7a07-73cf-9714-0bf85969305e', '-', '')),
     'published',
     'https://images.unsplash.com/photo-1531482615713-2afd69097998',
@@ -59,11 +59,4 @@ INSERT INTO event (
     NOW(),
     NOW()
 );
-
--- Create event registrations
-INSERT INTO event_registration (id, event_id, user_id, status, created_at, updated_at) VALUES
--- Registrations for Tech Conference
-(UNHEX(REPLACE('0194a352-1e63-7eb9-a5d1-1d0402ff51f6', '-', '')), UNHEX(REPLACE('0194a352-1e63-7eb9-a5d1-1d0402ff51f6', '-', '')), UNHEX(REPLACE('0194a352-7a07-73cf-9714-0bf85969305e', '-', '')), 'confirmed', NOW(), NOW()),
-(UNHEX(REPLACE('0194a352-7a07-73cf-9714-0bf85969305e', '-', '')), UNHEX(REPLACE('0194a352-1e63-7eb9-a5d1-1d0402ff51f6', '-', '')), UNHEX(REPLACE('0194a352-9d66-7bee-9bfd-c5a18e02e2c1', '-', '')), 'confirmed', NOW(), NOW());
-
 
