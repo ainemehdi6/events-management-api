@@ -12,11 +12,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[Route('/api', name: 'api_auth_')]
 class AuthController extends AbstractController
@@ -41,8 +41,13 @@ class AuthController extends AbstractController
 
         $errors = $this->validator->validate($userDTO);
         if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[$error->getPropertyPath()][] = $error->getMessage();
+            }
+
             return $this->json(
-                ['errors' => (string) $errors],
+                ['errors' => $errorMessages],
                 Response::HTTP_BAD_REQUEST
             );
         }
@@ -63,6 +68,14 @@ class AuthController extends AbstractController
     #[Route('/profile', name: 'profile', methods: ['GET'])]
     public function profile(): JsonResponse
     {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return $this->json(
+                ['error' => 'User not authenticated'],
+                Response::HTTP_UNAUTHORIZED
+            );
+        }
+
         return $this->json(
             $this->getUser(),
             Response::HTTP_OK,
@@ -89,12 +102,16 @@ class AuthController extends AbstractController
             'json'
         );
 
-        // If password change is requested, validate current password
         if ($profileDTO->newPassword) {
             $errors = $this->validator->validate($profileDTO, null, ['password_change']);
             if (count($errors) > 0) {
+                $errorMessages = [];
+                foreach ($errors as $error) {
+                    $errorMessages[$error->getPropertyPath()][] = $error->getMessage();
+                }
+
                 return $this->json(
-                    ['errors' => (string) $errors],
+                    ['errors' => $errorMessages],
                     Response::HTTP_BAD_REQUEST
                 );
             }
@@ -109,8 +126,13 @@ class AuthController extends AbstractController
 
         $errors = $this->validator->validate($profileDTO);
         if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[$error->getPropertyPath()][] = $error->getMessage();
+            }
+
             return $this->json(
-                ['errors' => (string) $errors],
+                ['errors' => $errorMessages],
                 Response::HTTP_BAD_REQUEST
             );
         }

@@ -22,7 +22,8 @@ class ApiAuthenticator extends AbstractAuthenticator
 
     public function __construct(
         private readonly string $applicationToken,
-    ) {}
+    ) {
+    }
 
     public function supports(Request $request): ?bool
     {

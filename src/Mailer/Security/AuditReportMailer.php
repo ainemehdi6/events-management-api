@@ -16,7 +16,6 @@ final class AuditReportMailer
 
     public function SendResultMail(array $advisories): void
     {
-
         $this->mailer->sendTwigTemplateBasedEmail(
             self::MAIL_DEST,
             'Vérification des vulnérabilités des packages',

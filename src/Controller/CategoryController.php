@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\DTO\CategoryDTO;
-use App\Entity\Category;
 use App\Repository\CategoryRepository;
 use App\Service\CategoryService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -53,8 +52,13 @@ class CategoryController extends AbstractController
 
         $errors = $this->validator->validate($categoryDTO);
         if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[$error->getPropertyPath()][] = $error->getMessage();
+            }
+
             return $this->json(
-                ['errors' => (string) $errors],
+                ['errors' => $errorMessages],
                 Response::HTTP_BAD_REQUEST
             );
         }
@@ -110,8 +114,13 @@ class CategoryController extends AbstractController
 
         $errors = $this->validator->validate($categoryDTO);
         if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[$error->getPropertyPath()][] = $error->getMessage();
+            }
+
             return $this->json(
-                ['errors' => (string) $errors],
+                ['errors' => $errorMessages],
                 Response::HTTP_BAD_REQUEST
             );
         }

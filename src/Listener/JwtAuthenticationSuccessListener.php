@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Listener;
 
-use App\Entity\User;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
 use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
@@ -16,7 +15,8 @@ class JwtAuthenticationSuccessListener
     public function __construct(
         private readonly JWTEncoderInterface $jwtEncoder,
         private readonly LoggerInterface $logger,
-    ) {}
+    ) {
+    }
 
     public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $event): void
     {
@@ -25,7 +25,6 @@ class JwtAuthenticationSuccessListener
         $this->addUserRoles($data, $event->getUser());
         $event->setData($data);
     }
-
 
     private function addTokenExpiration(array &$data): void
     {

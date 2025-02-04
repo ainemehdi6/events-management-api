@@ -21,7 +21,8 @@ class PostAuthenticationHandler implements AuthenticationSuccessHandlerInterface
         private readonly AuthenticationSuccessHandler $authenticationSuccessHandler,
         private readonly AuthenticationFailureHandler $authenticationFailureHandler,
         private readonly string $applicationToken,
-    ) {}
+    ) {
+    }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): Response
     {

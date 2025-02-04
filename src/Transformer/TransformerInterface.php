@@ -7,23 +7,12 @@ namespace App\Transformer;
 interface TransformerInterface
 {
     /**
-     * Transform a DTO to an Entity
-     *
-     * @template T of object
-     * @template E of object
-     * @param object $dto
-     * @param object|null $entity
-     * @return object
+     * Transform a DTO to an Entity.
      */
     public function transformToEntity(object $dto, ?object $entity = null): object;
 
     /**
-     * Transform an Entity to a DTO
-     *
-     * @template T of object
-     * @template E of object
-     * @param object $entity
-     * @return object
+     * Transform an Entity to a DTO.
      */
     public function transformFromEntity(object $entity): object;
 }

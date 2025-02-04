@@ -58,6 +58,7 @@ class EventRegistration
     public function setEvent(?Event $event): static
     {
         $this->event = $event;
+
         return $this;
     }
 
@@ -69,6 +70,7 @@ class EventRegistration
     public function setUser(?User $user): static
     {
         $this->user = $user;
+
         return $this;
     }
 
@@ -80,6 +82,7 @@ class EventRegistration
     public function setStatus(string $status): static
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -96,6 +99,7 @@ class EventRegistration
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
         return $this;
     }
 }

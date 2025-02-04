@@ -22,9 +22,8 @@ class Mailer
         array|string $mailTo,
         string $subject,
         string $twigTemplate,
-        array $vars
-    ): void
-    {
+        array $vars,
+    ): void {
         $mailTo = (array) $mailTo;
 
         $message = (new TemplatedEmail())
@@ -42,7 +41,7 @@ class Mailer
             $this->logger->error("'Une erreur est survenue lors de l'envoi' d'un mail", [
                 'subject' => $subject,
                 'to' => $mailTo,
-                'cause' => $e->getMessage()
+                'cause' => $e->getMessage(),
             ]);
         }
     }

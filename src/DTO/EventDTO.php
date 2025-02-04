@@ -20,7 +20,7 @@ class EventDTO
     public \DateTimeInterface $date;
 
     #[Assert\NotBlank]
-    #[Assert\GreaterThan(propertyPath: "date")]
+    #[Assert\GreaterThan(propertyPath: 'date')]
     public \DateTimeInterface $endDate;
 
     #[Assert\NotBlank]

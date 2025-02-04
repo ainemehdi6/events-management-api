@@ -52,6 +52,7 @@ class Category
     public function setName(string $name): static
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -63,6 +64,7 @@ class Category
     public function setDescription(?string $description): static
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -74,6 +76,7 @@ class Category
     public function setColor(string $color): static
     {
         $this->color = $color;
+
         return $this;
     }
 
@@ -88,6 +91,7 @@ class Category
             $this->events->add($event);
             $event->setCategory($this);
         }
+
         return $this;
     }
 
@@ -98,6 +102,7 @@ class Category
                 $event->setCategory(null);
             }
         }
+
         return $this;
     }
 }
