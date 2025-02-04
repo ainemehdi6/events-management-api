@@ -46,7 +46,7 @@ class EventController extends AbstractController
 
         foreach ($events as $event) {
             $isRegistered = $event->getRegistrations()
-                ->exists(fn($key, $registration) => $registration->getUser() === $user);
+                ->exists(fn ($key, $registration) => $registration->getUser() === $user);
             $event->setIsRegistered($isRegistered);
         }
 
@@ -57,7 +57,6 @@ class EventController extends AbstractController
             ['groups' => ['event:read']]
         );
     }
-
 
     #[IsGranted('ROLE_ADMIN')]
     #[Route('', name: 'create', methods: ['POST'])]
@@ -72,8 +71,13 @@ class EventController extends AbstractController
 
         $errors = $this->validator->validate($eventDTO);
         if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[$error->getPropertyPath()][] = $error->getMessage();
+            }
+
             return $this->json(
-                ['errors' => (string) $errors],
+                ['errors' => $errorMessages],
                 Response::HTTP_BAD_REQUEST
             );
         }
@@ -111,7 +115,7 @@ class EventController extends AbstractController
         }
 
         $isRegistered = $event->getRegistrations()
-            ->exists(fn($key, $registration) => $registration->getUser() === $user);
+            ->exists(fn ($key, $registration) => $registration->getUser() === $user);
         $event->setIsRegistered($isRegistered);
 
         return $this->json(
@@ -144,8 +148,13 @@ class EventController extends AbstractController
 
         $errors = $this->validator->validate($eventDTO);
         if (count($errors) > 0) {
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[$error->getPropertyPath()][] = $error->getMessage();
+            }
+
             return $this->json(
-                ['errors' => (string) $errors],
+                ['errors' => $errorMessages],
                 Response::HTTP_BAD_REQUEST
             );
         }

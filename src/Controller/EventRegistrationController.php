@@ -8,7 +8,6 @@ use App\Entity\User;
 use App\Repository\EventRegistrationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -102,7 +101,7 @@ class EventRegistrationController extends AbstractController
     public function updateRegistrationStatus(
         Event $event,
         Uuid $registrationId,
-        Request $request
+        Request $request,
     ): JsonResponse {
         $user = $this->getUser();
         if (!$user) {

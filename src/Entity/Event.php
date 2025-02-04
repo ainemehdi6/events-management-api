@@ -107,6 +107,7 @@ class Event
     public function setTitle(string $title): static
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -118,6 +119,7 @@ class Event
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -129,6 +131,7 @@ class Event
     public function setDate(\DateTimeInterface $date): static
     {
         $this->date = $date;
+
         return $this;
     }
 
@@ -140,6 +143,7 @@ class Event
     public function setEndDate(\DateTimeInterface $endDate): static
     {
         $this->endDate = $endDate;
+
         return $this;
     }
 
@@ -151,6 +155,7 @@ class Event
     public function setLocation(string $location): static
     {
         $this->location = $location;
+
         return $this;
     }
 
@@ -162,6 +167,7 @@ class Event
     public function setCapacity(int $capacity): static
     {
         $this->capacity = $capacity;
+
         return $this;
     }
 
@@ -173,6 +179,7 @@ class Event
     public function setRegisteredCount(int $registeredCount): static
     {
         $this->registeredCount = $registeredCount;
+
         return $this;
     }
 
@@ -184,6 +191,7 @@ class Event
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
+
         return $this;
     }
 
@@ -195,6 +203,7 @@ class Event
     public function setStatus(string $status): static
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -206,6 +215,7 @@ class Event
     public function setImageUrl(?string $imageUrl): static
     {
         $this->imageUrl = $imageUrl;
+
         return $this;
     }
 
@@ -217,6 +227,7 @@ class Event
     public function setPrice(float $price): static
     {
         $this->price = $price;
+
         return $this;
     }
 
@@ -228,6 +239,7 @@ class Event
     public function setOrganizer(?User $organizer): static
     {
         $this->organizer = $organizer;
+
         return $this;
     }
 
@@ -239,6 +251,7 @@ class Event
     public function setFeatures(array $features): static
     {
         $this->features = $features;
+
         return $this;
     }
 
@@ -255,6 +268,7 @@ class Event
     public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
         return $this;
     }
 
@@ -272,6 +286,7 @@ class Event
             $this->registrations->add($registration);
             $registration->setEvent($this);
         }
+
         return $this;
     }
 
@@ -283,6 +298,7 @@ class Event
                 $registration->setEvent(null);
             }
         }
+
         return $this;
     }
 
@@ -294,6 +310,7 @@ class Event
     public function setIsRegistered(bool $isRegistered): static
     {
         $this->isRegistered = $isRegistered;
+
         return $this;
     }
 }

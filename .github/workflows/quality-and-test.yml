@@ -1,0 +1,236 @@
+name: Project quality check
+
+on:
+    pull_request:
+        branches:
+            - master
+            - develop
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    composer:
+        name: Build app dependencies
+        runs-on: ubuntu-latest
+        outputs:
+            cache-key: ${{ steps.composer-cache.outputs.key }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.1'
+                  extensions: pdo_mysql, zip, intl
+                  coverage: none
+
+            - name: Get composer cache directory
+              id: composer-cache
+              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+            - name: Cache dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: ${{ runner.os }}-composer-
+
+            - name: Validate composer files
+              run: composer validate --no-check-version
+
+            - name: Install dependencies
+              run: composer install --prefer-dist --no-progress
+
+    security:
+        name: Security Check
+        runs-on: ubuntu-latest
+        needs: composer
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.1'
+                  extensions: pdo_mysql
+                  coverage: none
+
+            - name: Get cached dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ needs.composer.outputs.cache-key }}
+
+            - name: Install dependencies
+              run: composer install --prefer-dist --no-progress
+
+            - name: Run security check
+              run: composer audit
+
+    phpstan:
+        name: PHPStan
+        runs-on: ubuntu-latest
+        needs: composer
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.1'
+                  extensions: pdo_mysql
+                  coverage: none
+
+            - name: Get cached dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ needs.composer.outputs.cache-key }}
+
+            - name: Install dependencies
+              run: composer install --prefer-dist --no-progress
+
+            - name: Run PHPStan
+              run: composer run-script phpstan
+
+    php-cs-fixer:
+        name: PHP CS Fixer
+        runs-on: ubuntu-latest
+        needs: composer
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.1'
+                  extensions: pdo_mysql
+                  coverage: none
+
+            - name: Get cached dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ needs.composer.outputs.cache-key }}
+
+            - name: Install dependencies
+              run: composer install --prefer-dist --no-progress
+
+            - name: Run PHP-CS-Fixer
+              run: composer run-script cs-fixer
+
+    filesize:
+        name: File Size Check
+        runs-on: ubuntu-latest
+        needs: composer
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.1'
+                  extensions: pdo_mysql
+                  coverage: none
+
+            - name: Get cached dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ needs.composer.outputs.cache-key }}
+
+            - name: Install dependencies
+              run: composer install --prefer-dist --no-progress
+
+            - name: Check file sizes
+              run: composer run-script file-size
+
+    magicnumber:
+        name: Magic Number Check
+        runs-on: ubuntu-latest
+        needs: composer
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.1'
+                  extensions: pdo_mysql
+                  coverage: none
+
+            - name: Get cached dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ needs.composer.outputs.cache-key }}
+
+            - name: Install dependencies
+              run: composer install --prefer-dist --no-progress
+
+            - name: Check magic numbers
+              run: composer run-script phpmnd
+
+    tests:
+      name: PHPUnit Tests
+      runs-on: ubuntu-latest
+      needs: composer
+      services:
+        mysql:
+          image: mysql:8.0
+          env:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: event_manager_test
+          ports:
+            - 3306:3306
+          options: >-
+            --health-cmd="mysqladmin ping"
+            --health-interval=10s
+            --health-timeout=5s
+            --health-retries=3
+
+      env:
+        APP_ENV: test
+        DATABASE_URL: 'mysql://root:root@127.0.0.1:3306/event_manager?serverVersion=8.0'
+        JWT_SECRET_KEY: '%kernel.project_dir%/config/jwt/private-test.pem'
+        JWT_PUBLIC_KEY: '%kernel.project_dir%/config/jwt/public-test.pem'
+        JWT_PASSPHRASE: test_passphrase
+
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Setup PHP
+          uses: shivammathur/setup-php@v2
+          with:
+            php-version: '8.1'
+            extensions: pdo_mysql
+            coverage: none
+
+        - name: Get cached dependencies
+          uses: actions/cache@v3
+          with:
+            path: ${{ steps.composer-cache.outputs.dir }}
+            key: ${{ needs.composer.outputs.cache-key }}
+
+        - name: Install dependencies
+          run: composer install --prefer-dist --no-progress
+
+        - name: Generate JWT keys
+          run: |
+            mkdir -p config/jwt
+            openssl genpkey -out config/jwt/private-test.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -pass pass:test_passphrase
+            openssl pkey -in config/jwt/private-test.pem -out config/jwt/public-test.pem -pubout -passin pass:test_passphrase
+
+        - name: Wait for MySQL
+          run: |
+            while ! mysqladmin ping -h"127.0.0.1" -P"3306" --silent; do
+              sleep 1
+            done
+
+        - name: Run tests
+          run: composer run-script phpunit

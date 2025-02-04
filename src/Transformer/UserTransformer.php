@@ -21,7 +21,7 @@ class UserTransformer implements TransformerInterface
             throw new \InvalidArgumentException('DTO must be an instance of UserDTO');
         }
 
-        if ($entity !== null && !$entity instanceof User) {
+        if (null !== $entity && !$entity instanceof User) {
             throw new \InvalidArgumentException('Entity must be an instance of User');
         }
 

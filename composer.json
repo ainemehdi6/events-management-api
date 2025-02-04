@@ -1,4 +1,6 @@
 {
+    "name": "app/events-management-api",
+    "description": "Event Manager API built with Symfony - A secure and scalable event management system",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
@@ -17,7 +19,7 @@
         "nelmio/cors-bundle": "^2.5",
         "phpdocumentor/reflection-docblock": "^5.6",
         "symfony/console": "6.4.*",
-        "symfony/deprecation-contracts": "*",
+        "symfony/deprecation-contracts": "^3.5",
         "symfony/dotenv": "6.4.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "6.4.*",
@@ -26,7 +28,7 @@
         "symfony/runtime": "6.4.*",
         "symfony/security-bundle": "6.4.*",
         "symfony/serializer": "6.4.*",
-        "symfony/translation-contracts": "*",
+        "symfony/translation-contracts": "^3.5",
         "symfony/uid": "6.4.*",
         "symfony/validator": "6.4.*",
         "symfony/yaml": "6.4.*"
@@ -34,6 +36,7 @@
     "config": {
         "allow-plugins": {
             "php-http/discovery": true,
+            "phpro/grumphp": true,
             "symfony/flex": true,
             "symfony/runtime": true
         },
@@ -68,7 +71,12 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ]
+        ],
+        "phpstan": "./vendor/bin/grumphp run --tasks=phpstan",
+        "cs-fixer": "./vendor/bin/grumphp run --tasks=phpcsfixer",
+        "file-size": "./vendor/bin/grumphp run --tasks=file_size",
+        "phpmnd": "./vendor/bin/grumphp run --tasks=phpmnd",
+        "phpunit": "./vendor/bin/phpunit"
     },
     "conflict": {
         "symfony/symfony": "*"
@@ -80,7 +88,11 @@
         }
     },
     "require-dev": {
+        "phpstan/phpstan": "^1.10",
         "phpunit/phpunit": "^10.5",
+        "friendsofphp/php-cs-fixer": "^3.40",
+        "phpro/grumphp": "^2.3",
+        "povils/phpmnd": "^3.2",
         "symfony/browser-kit": "6.4.*",
         "symfony/http-kernel": "6.4.*",
         "symfony/maker-bundle": "^1.61",

@@ -15,7 +15,7 @@ class CategoryTransformer implements TransformerInterface
             throw new \InvalidArgumentException('DTO must be an instance of CategoryDTO');
         }
 
-        if ($entity !== null && !$entity instanceof Category) {
+        if (null !== $entity && !$entity instanceof Category) {
             throw new \InvalidArgumentException('Entity must be an instance of Category');
         }
 

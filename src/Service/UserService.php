@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\DTO\UserDTO;
 use App\DTO\ProfileUpdateDTO;
+use App\DTO\UserDTO;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Transformer\UserTransformer;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-
+use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
 
 class UserService
 {
