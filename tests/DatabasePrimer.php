@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests;
 
+use App\Entity\Category;
+use App\Entity\Event;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use App\Entity\User;
-use App\Entity\Category;
-use App\Entity\Event;
 
 class DatabasePrimer
 {
     public static function prime(
         EntityManagerInterface $em,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
     ): void {
         $schemaTool = new SchemaTool($em);
         $metadata = $em->getMetadataFactory()->getAllMetadata();

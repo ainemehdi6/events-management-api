@@ -5,18 +5,15 @@ declare(strict_types=1);
 namespace App\Tests\Api\Controller;
 
 use App\Tests\DatabasePrimer;
-use Faker\Factory;
-use Faker\Generator;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Doctrine\ORM\EntityManagerInterface;
 
 class EventControllerTest extends WebTestCase
 {
-    private ?Generator $faker;
     private ?KernelBrowser $client;
     private array $adminCredentials = [
         'email' => 'admin@example.com',
@@ -30,7 +27,6 @@ class EventControllerTest extends WebTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->faker = Factory::create('fr_FR');
         $this->client = static::createClient();
 
         $container = static::getContainer();
@@ -74,11 +70,12 @@ class EventControllerTest extends WebTestCase
             ])
         );
 
-        if ($this->client->getResponse()->getStatusCode() !== Response::HTTP_OK) {
+        if (Response::HTTP_OK !== $this->client->getResponse()->getStatusCode()) {
             return null;
         }
 
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
+
         return $responseData['token'] ?? null;
     }
 
@@ -91,7 +88,7 @@ class EventControllerTest extends WebTestCase
             Request::METHOD_GET,
             '/api/events',
             server: $this->buildHeaders([
-                'HTTP_Authorization' => 'Bearer ' . $token
+                'HTTP_Authorization' => 'Bearer '.$token,
             ])
         );
 
@@ -121,7 +118,7 @@ class EventControllerTest extends WebTestCase
             Request::METHOD_GET,
             '/api/events',
             server: $this->buildHeaders([
-                'HTTP_Authorization' => 'Bearer ' . $token
+                'HTTP_Authorization' => 'Bearer '.$token,
             ])
         );
 
@@ -137,7 +134,7 @@ class EventControllerTest extends WebTestCase
             Request::METHOD_GET,
             "/api/events/{$eventId}",
             server: $this->buildHeaders([
-                'HTTP_Authorization' => 'Bearer ' . $token
+                'HTTP_Authorization' => 'Bearer '.$token,
             ])
         );
 
@@ -158,7 +155,7 @@ class EventControllerTest extends WebTestCase
             Request::METHOD_GET,
             '/api/events/00000000-0000-0000-0000-000000000000',
             server: $this->buildHeaders([
-                'HTTP_Authorization' => 'Bearer ' . $token
+                'HTTP_Authorization' => 'Bearer '.$token,
             ])
         );
 
@@ -174,7 +171,7 @@ class EventControllerTest extends WebTestCase
             Request::METHOD_GET,
             '/api/events',
             server: $this->buildHeaders([
-                'HTTP_Authorization' => 'Bearer ' . $token
+                'HTTP_Authorization' => 'Bearer '.$token,
             ])
         );
 
@@ -190,7 +187,7 @@ class EventControllerTest extends WebTestCase
             Request::METHOD_DELETE,
             "/api/events/{$eventId}",
             server: $this->buildHeaders([
-                'HTTP_Authorization' => 'Bearer ' . $token
+                'HTTP_Authorization' => 'Bearer '.$token,
             ])
         );
 
@@ -206,7 +203,7 @@ class EventControllerTest extends WebTestCase
             Request::METHOD_GET,
             '/api/events',
             server: $this->buildHeaders([
-                'HTTP_Authorization' => 'Bearer ' . $token
+                'HTTP_Authorization' => 'Bearer '.$token,
             ])
         );
 
@@ -222,7 +219,7 @@ class EventControllerTest extends WebTestCase
             Request::METHOD_DELETE,
             "/api/events/{$eventId}",
             server: $this->buildHeaders([
-                'HTTP_Authorization' => 'Bearer ' . $token
+                'HTTP_Authorization' => 'Bearer '.$token,
             ])
         );
 
@@ -232,7 +229,7 @@ class EventControllerTest extends WebTestCase
             Request::METHOD_GET,
             "/api/events/{$eventId}",
             server: $this->buildHeaders([
-                'HTTP_Authorization' => 'Bearer ' . $token
+                'HTTP_Authorization' => 'Bearer '.$token,
             ])
         );
 
@@ -248,7 +245,7 @@ class EventControllerTest extends WebTestCase
             Request::METHOD_GET,
             '/api/events',
             server: $this->buildHeaders([
-                'HTTP_Authorization' => 'Bearer ' . $token
+                'HTTP_Authorization' => 'Bearer '.$token,
             ])
         );
 
