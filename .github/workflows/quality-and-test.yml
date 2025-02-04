@@ -196,7 +196,7 @@ jobs:
 
       env:
         APP_ENV: test
-        DATABASE_URL: 'mysql://root:root@127.0.0.1:3306/event_manager_test?serverVersion=8.0'
+        DATABASE_URL: 'mysql://root:root@127.0.0.1:3306/event_manager?serverVersion=8.0'
         JWT_SECRET_KEY: '%kernel.project_dir%/config/jwt/private-test.pem'
         JWT_PUBLIC_KEY: '%kernel.project_dir%/config/jwt/public-test.pem'
         JWT_PASSPHRASE: test_passphrase
