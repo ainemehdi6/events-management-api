@@ -177,47 +177,60 @@ jobs:
               run: composer run-script phpmnd
 
     tests:
-        name: PHPUnit Tests
-        runs-on: ubuntu-latest
-        needs: composer
-        services:
-            mysql:
-                image: mysql:8.3
-                env:
-                    MYSQL_ROOT_PASSWORD: root
-                    MYSQL_DATABASE: appdb
-                    MYSQL_USER: app
-                    MYSQL_PASSWORD: app
-                ports:
-                    - 3306:3306
-                options: >-
-                    --health-cmd="mysqladmin ping"
-                    --health-interval=10s
-                    --health-timeout=5s
-                    --health-retries=3
+      name: PHPUnit Tests
+      runs-on: ubuntu-latest
+      needs: composer
+      services:
+        mysql:
+          image: mysql:8.0
+          env:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: event_manager_test
+          ports:
+            - 3306:3306
+          options: >-
+            --health-cmd="mysqladmin ping"
+            --health-interval=10s
+            --health-timeout=5s
+            --health-retries=3
 
-        env:
-            APP_ENV: test
-            DATABASE_URL: 'mysql://root:root@db:3306/test_database'
+      env:
+        APP_ENV: test
+        DATABASE_URL: 'mysql://root:root@127.0.0.1:3306/event_manager_test?serverVersion=8.0'
+        JWT_SECRET_KEY: '%kernel.project_dir%/config/jwt/private-test.pem'
+        JWT_PUBLIC_KEY: '%kernel.project_dir%/config/jwt/public-test.pem'
+        JWT_PASSPHRASE: test_passphrase
 
-        steps:
-            - uses: actions/checkout@v4
+      steps:
+        - uses: actions/checkout@v4
 
-            - name: Setup PHP
-              uses: shivammathur/setup-php@v2
-              with:
-                  php-version: '8.1'
-                  extensions: pdo_mysql
-                  coverage: none
+        - name: Setup PHP
+          uses: shivammathur/setup-php@v2
+          with:
+            php-version: '8.3'
+            extensions: pdo_mysql
+            coverage: none
 
-            - name: Get cached dependencies
-              uses: actions/cache@v3
-              with:
-                  path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ needs.composer.outputs.cache-key }}
+        - name: Get cached dependencies
+          uses: actions/cache@v3
+          with:
+            path: ${{ steps.composer-cache.outputs.dir }}
+            key: ${{ needs.composer.outputs.cache-key }}
 
-            - name: Install dependencies
-              run: composer install --prefer-dist --no-progress
+        - name: Install dependencies
+          run: composer install --prefer-dist --no-progress
 
-            - name: Run tests
-              run: composer run-script phpunit
+        - name: Generate JWT keys
+          run: |
+            mkdir -p config/jwt
+            openssl genpkey -out config/jwt/private-test.pem -aes256 -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -pass pass:test_passphrase
+            openssl pkey -in config/jwt/private-test.pem -out config/jwt/public-test.pem -pubout -passin pass:test_passphrase
+
+        - name: Wait for MySQL
+          run: |
+            while ! mysqladmin ping -h"127.0.0.1" -P"3306" --silent; do
+              sleep 1
+            done
+
+        - name: Run tests
+          run: composer run-script phpunit
