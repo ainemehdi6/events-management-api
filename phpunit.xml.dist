@@ -15,7 +15,7 @@
         <env name="APP_ENV" value="test" force="true"/>
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />
         <env name="APPLICATION_TOKEN" value="test_token" />
-        <env name="DATABASE_URL" value="mysql://root:root@db:3306/test_database" />
+        <env name="DATABASE_URL" value="mysql://root:root@db:3306/event_manager_test" />
     </php>
 
     <testsuites>
