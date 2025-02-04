@@ -1,0 +1,36 @@
+name: Project deployment
+
+on:
+    workflow_dispatch:
+        inputs:
+            target_runner_label:
+                type: choice
+                description: 'Target Github runner'
+                options:
+                    - recette
+            environment:
+                description: 'Project environment'
+                type: environment
+
+jobs:
+    deployment:
+        defaults:
+            run:
+                working-directory: '${{ secrets.PROJECT_PATH }}'
+
+        runs-on: [ secured-api, '${{ inputs.target_runner_label }}' ]
+        steps:
+            -   name: Switch to current branch
+                run: git checkout "${GITHUB_REF#refs/heads/}"
+
+            -   name: Pull last changes
+                run: git pull
+
+            -   name: Install dependencies last version
+                run: make composer
+
+            -   name: Update database schema to the latest migration versions
+                run: make migrate
+
+            -   name: Clear cache & apply fitting permissions on required directories
+                run: make clear-cache fix-permissions
