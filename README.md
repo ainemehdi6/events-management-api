@@ -43,12 +43,14 @@ JWT_PASSPHRASE=your_passphrase
 
 3. Build and Up containers
 ```bash
+docker compose build --no-cache
+
 docker compose up -d
 ```
 
 4. Enter the php container
 ```bash
-docker exec -it api-php-1 bash
+make exec
 ```
 
 5. Install dependencies

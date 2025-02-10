@@ -25,6 +25,7 @@
         "symfony/framework-bundle": "6.4.*",
         "symfony/lock": "6.4.*",
         "symfony/mailer": "6.4.*",
+        "symfony/monolog-bundle": "^3.10",
         "symfony/runtime": "6.4.*",
         "symfony/security-bundle": "6.4.*",
         "symfony/serializer": "6.4.*",

@@ -8,8 +8,6 @@ services:
     volumes:
       - .:/var/www/html
       - ./var:/var/www/html/var
-    environment:
-      - APP_ENV=dev
     depends_on:
       - db
 
@@ -23,6 +21,7 @@ services:
     depends_on:
       - php
       - mailpit
+      - api-doc
 
   db:
     image: mysql:8.0
